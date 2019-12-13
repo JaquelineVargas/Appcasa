@@ -36,6 +36,34 @@ const upload = multer({
     }
 }).single('foto');
 
+
+router.post("/imagesupload", (req, res) => {
+  var params = req.query;
+//console.log(req.body)
+  if (params.id == null) {
+    res.status(200).json({
+      "msn" : "falta el identificado id "
+    });
+    return;
+  }
+  upload(req, res, (err) => {
+    if (err) {
+      res.status(200).json({
+        "msn" : "Error " + err
+      })
+      return;
+    }
+    var namefile = req.file.path;
+    var ID = params.id;
+    //udate la base de datos
+    res.status(200).json({
+      "msn" : "COOL " + namefile
+    });
+
+    //upate en la base de Datos
+
+  })
+})
 /* Agregar nuevo producto */
 router.post("/", (req, res) => {
 
