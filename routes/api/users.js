@@ -4,7 +4,7 @@ const sha1 = require('sha1');
 const jwt = require('jsonwebtoken');
 const Usuario = require('../../database/models/user');
 
-/* POST Crear nuevo usuario */
+/*  Crear nuevo usuario */
 router.post('/', function(req, res, next) {
   //validar regex
   const data = {
@@ -31,13 +31,11 @@ router.post('/', function(req, res, next) {
 
 
 
-/* ver usuarios*/
-router.get('/', function(req, res, next) {
-
-  Usuario.find()
-  .exec(function (err, doc) {
-    res.json(doc)
-  });
+/* read usuarios*/
+router.get("/", (req,res,next) => {
+  Usuario.find({}).exec((error,docs) => {
+  res.status(200).json(docs);
+ })
 });
 
 
@@ -62,6 +60,18 @@ router.patch('/:id',function(req, res, next){
         error: err.message
       });
     });
+});
+//read user for id
+//for perfil
+router.get('/:id', function(req, res, next) {
+
+  Usuario.findById(req.params.id,"-password")
+  .exec(function (err, doc) {
+    if (err) {
+      res.json({error:err.message})
+    }
+    res.json(doc)
+  });
 });
 
 
@@ -113,13 +123,14 @@ router.post('/login', (req, res, next) => {
 
 //delete user
 router.delete("/", async(req, res) => {
-if (req.query.id == null) {
-res.status(300).json({
-msn: "Error no existe id"
-});return;
-}
-var r = await Usuario.remove({_id: req.query.id});
-res.status(300).json(r);
+    if (req.query.id == null) {
+        res.status(300).json({
+            msn: "id no encontrado"
+        });
+        return;
+    }
+    var result = await Usuario.remove({_id: req.query.id});
+    res.status(200).json(result);
 });
 
 

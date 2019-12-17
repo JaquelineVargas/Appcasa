@@ -4,6 +4,7 @@ var router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+//const jsonQuery = require('json-query');
 
 const Producto = require('../../database/models/producto');
 const Imagen = require('../../database/models/imagen');
@@ -129,28 +130,34 @@ router.post("/", (req, res) => {
 /* listar Productos para el comprador */
 router.get('/', function (req, res, next) {
 
-    let criterios = {};
+  let criterios = {};
 
-    if(req.query.descripcion != undefined){
-        criterios['$text'] = {$search: req.query.descripcion}
-    }
-    if(req.query.zona != undefined){
-        criterios['$text'] = {$search: req.query.zona}
-    }
-    Producto.find(criterios)/*.ne('estado','no disponible')*/.exec().then(docs => {
-        if(docs.length == 0){
-          console.log(criterios[0]);
-        return res.status(404).json({message: 'No existen Productos disponibles'});
-        }
-        res.json({data:docs});
-    })
-    .catch(err => {
-        res.status(500).json({
-            error: err.message
-        })
-    });
+  if(req.query.descripcion != undefined){
+      criterios['$text'] = {$search: req.query.descripcion}
+  }
+  if(req.query.zona != undefined){
+      criterios['$text'] = {$search: req.query.zona}
+  }
+  Producto.find(criterios)/*.ne('estado','no disponible')*/.exec().then(docs => {
+      if(docs.length == 0){
+        console.log(criterios[0]);
+      return res.status(404).json({message: 'No existen Productos disponibles'});
+      }
+      res.json({data:docs});
+  })
+  .catch(err => {
+      res.status(500).json({
+          error: err.message
+      })
+  });
 });
 
+//mi codigo
+router.post('/spinner',(req,res)=>{
+    Producto.find({tipo:req.body.tipo},(err,docs)=>{
+      res.json({data:docs});
+    });
+});
 
 
 
@@ -218,15 +225,17 @@ router.patch('/:id', function (req, res) {
 });
 */
 router.delete("/", async(req, res) => {
-  if (req.query.id == null) {
-  res.status(300).json({
-  msn: "Error no existe id"
-  });return;
-  }
-  var r = await
-  Producto.remove({_id: req.query.id});
-  res.status(300).json(r);
-  });
+if (req.query.id == null) {
+res.status(300).json({
+msn: "Error no existe id"
+});return;
+}
+var r = await USER.remove({_id: req.query.id});
+res.status(300).json(r);
+});
+
+
+
 
 
 
